@@ -3,11 +3,11 @@ import CartRepository from "../repositories/cartsRepositories.js"
 import UserRepository from "../repositories/usersRepositories.js"
 import MessageRepository from "../repositories/messagesRepositories.js"
 import TicketRepository from "../repositories/ticketsRepositories.js"
-import Product from "../controllers/mongoDB/productManagerMongo.js"
-import Cart from "../controllers/mongoDB/cartManagerMongo.js"
-import Message from "../controllers/mongoDB/messageManagerMongo.js"
-import Ticket from "../controllers/mongoDB/ticketManager.js"
-import User from "../controllers/mongoDB/userManagerMongo.js"
+import Product from "../mongoDB/classes/productDao.js"
+import Cart from "../mongoDB/classes/cartDao.js"
+import Message from "../mongoDB/classes/messageDao.js"
+import Ticket from "../mongoDB/classes/ticketDao.js"
+import User from "../mongoDB/classes/userDao.js"
 
 const productDAO = new Product()
 const cartDAO = new Cart()

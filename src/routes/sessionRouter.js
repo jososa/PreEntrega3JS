@@ -1,5 +1,7 @@
 import { Router } from "express"
-import usersService from "../dao/services/users.service.js"
+//import usersService from "../dao/services/users.service.js"
+import userDTO from "../dao/DTO/userDTO.js"
+import { userRepository } from "../dao/repositories/index.js"
 import { createHash } from "../utils.js"
 import passport from "passport"
 
@@ -63,22 +65,23 @@ sessionRouter.get("/current", async (req, res) => {
   if (!req.user) {
     res.status(403).send({ status: "Error", message: "Usuario no autenticado" })
   }
-  res.send({ status: "success", payload: req.user })
-});
+  const result = new userDTO(req.user)
+  res.status(200).json({ status: "success", payload: result })
+})
 
 //Restaurar password
 sessionRouter.post("/restore", async (req, res) => {
   const {email, password} = req.body
   if(!email || !password) return
 
-  const user = await usersService.findUserByEmail(email)
+  const user = await userRepository.findUserByEmail(email)
   if(!user){
     return res.status(400).send({status: "error", message:"No se encuentra usuario"})
   }
 
   const newPass = createHash(password)
   const pwd = {password: newPass}
-  await usersService.updateUser(user, pwd)
+  await userRepository.updateUser(user, pwd)
   res.send({status:"success", message: "Clave actualizada"})
 })
 

@@ -1,22 +1,21 @@
-import CartService from "../../services/carts.service.js"
+import { cartService } from "../dao/services/carts.service.js"
+//import cartsRepositories from "../../repositories/cartsRepositories.js"
 
-class CartManager {
+export default class CartController {
 
     getCarts = async (req,res) => {
-      const cart = await CartService.getCarts()
+      const cart = await cartService.getCarts()
       try {
         res.json({cart})
       } catch (error) {
-        res.status(500).json({ error: error.message });
+        res.status(500).json({ error: error.message })
       }
-      
     }
-    
 
     getCartById = async (req, res) => {
       try {
         const cid = req.params.cid
-        const cart = await CartService.getCartById(cid)
+        const cart = await cartService.getCartById(cid)
         res.json(cart)
       } catch (error) {
           console.log(error)
@@ -26,34 +25,32 @@ class CartManager {
 
     createCart = async (req, res) => {
       try {
-        const newCart = await CartService.createCart();
+        const newCart = await cartService.createCart();
         res.status(201).send({ status: "Carrito creado", payload: newCart })
       } catch (error) {
           console.log(error)
           res.status(500).send({ status: "Error al crear el carrito",  error: error.message })
       }
     }
-  
 
     async addProductsToCart(req, res) {
         const { cid, pid } = req.params
         const { quantity } = req.body
     
         try {
-          const updatedCart = await CartService.addProductsToCart(cid, pid, quantity)
+          const updatedCart = await cartService.addProductsToCart(cid, pid, quantity)
           res.status(201).send({ status: "success", payload: updatedCart })
         } catch (error) {
             res.status(500).send({ status: "error",  error: error.message })
         }
       }
-
       
     updateProductsInCart = async (req, res) => {
         try {
           const cid = req.params.cid
           const {products} = req.body
       
-          const result = await CartService.updateProductsInCart(cid, products)
+          const result = await cartService.updateProductsInCart(cid, products)
       
           res.status(200).send({ status: "Carrito actualizado con exito" })
       } catch (error) {
@@ -65,7 +62,7 @@ class CartManager {
       const { cid, pid } = req.params
       const { quantity } = req.body
       try {
-          const updatedCart = await CartService.updateProductQuantity(cid, pid, quantity)
+          const updatedCart = await cartService.updateProductQuantity(cid, pid, quantity)
           res.status(200).send({ status: "success", payload: updatedCart })
       } catch (error) {
           console.log(error)
@@ -76,7 +73,7 @@ class CartManager {
     removeProductFromCart = async (req, res) => {
         const { cid, pid } = req.params
         try {
-            await CartService.removeProductFromCart(cid, pid)
+            await cartService.removeProductFromCart(cid, pid)
             res.status(200).send({ status: "success", message: `Se elimino producto ID: ${pid} del carrito` })
         } catch (error) {
             console.log(error)
@@ -84,18 +81,27 @@ class CartManager {
         }
       }
 
-
     clearCart = async (req, res) => {
-      const { cid } = req.params;
+      const { cid } = req.params
       try {
-          await CartService.clearCart(cid);
-          res.status(204).send({ status: "success", message: `Carrito ID: ${cid} eliminado con exito`, payload: null });
+          await cartService.clearCart(cid)
+          res.status(204).send({ status: "success", message: `Carrito ID: ${cid} eliminado con exito`, payload: null })
       } catch (error) {
-          console.log(error);
-          res.status(500).send({ status: "error",  error: error.message });
+          console.log(error)
+          res.status(500).send({ status: "error",  error: error.message })
+      }
+    }
+
+    async getProductsByCartId(req, res) {
+      const cid = req.params.cid
+      const cart = await cartService.getProductsByCartId(cid)
+      try {
+        res.json(cart.products)
+      } catch (error) {
+        res.status(500).json({ error: error.message })
       }
     }
 
 }
 
-export const cartManager = new CartManager()
+export const cartController = new CartController()

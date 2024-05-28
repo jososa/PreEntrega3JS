@@ -2,8 +2,8 @@ import passport from "passport"
 import local from "passport-local"
 import GitHubStrategy from "passport-github2"
 import { environment } from "./config.js"
-import { userManager } from "../dao/controllers/mongoDB/userManagerMongo.js"
-import usersService from "../dao/services/users.service.js"
+import { userController } from "../controllers/userController.js"
+import { userService } from "../dao/services/users.service.js"
 
 const LocalStrategy = local.Strategy
 
@@ -13,7 +13,7 @@ const initializePassport = () => {
     passport.use("register", new LocalStrategy(
         { passReqToCallback:true, usernameField: "email" },
     async(req, username, password, done) => {
-            userManager.registerUser(req, username, password, done)
+            userController.registerUser(req, username, password, done)
     } ))
 
     //Estrategia de login
@@ -22,7 +22,7 @@ const initializePassport = () => {
         new LocalStrategy(
           { usernameField: "email" },
           async (username, password, done) => {
-            userManager.loginUser(username, password, done)
+            userController.loginUser(username, password, done)
           }
         )
       )
@@ -34,7 +34,7 @@ const initializePassport = () => {
         callBackURL: environment.callbackURL,
     },
     async (accessToken, refreshToken, profile, done) => {
-        userManager.loginGithub(accessToken, refreshToken, profile, done)
+        userController.loginGithub(accessToken, refreshToken, profile, done)
     }))
 
     passport.serializeUser((user, done) => {
@@ -57,7 +57,7 @@ const initializePassport = () => {
                 }
                 done(null, adminUser)
             } else{
-                let user = await usersService.findUserByEmail(id)
+                let user = await userService.findUserByEmail(id)
                 done(null, user)
             }
         } catch (error) {

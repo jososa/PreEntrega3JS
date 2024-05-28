@@ -1,8 +1,11 @@
-import { Router } from "express";
+import { Router } from "express"
 //import ProductManager from "../dao/controllers/mongoDB/productManagerMongo.js";
 //import CartManager from "../dao/controllers/mongoDB/cartManagerMongo.js"
-import productsService from "../dao/services/products.service.js"
-import CartService from "../dao/services/carts.service.js";
+//import productsService from "../dao/services/products.service.js"
+//import CartService from "../dao/services/carts.service.js";
+import { productRepository } from "../dao/repositories/index.js"
+import { cartRepository } from "../dao/repositories/index.js"
+//import { messageRepository } from "../dao/repositories/messagesRepositories.js"
 import { auth } from "../middlewares/auth.js"
 
 const viewsRouter = Router()
@@ -10,7 +13,7 @@ const viewsRouter = Router()
 //const carrito = new CartManager()
 
 viewsRouter.get("/", auth, async (req, res)=>{
-    let allProducts = await productsService.getProducts()
+    let allProducts = await productRepository.getProducts()
     res.render('home', {user: req.session.user, products : allProducts})
 })
 
@@ -24,7 +27,7 @@ viewsRouter.get("/chat", auth, (req,res)=>{
 
 viewsRouter.get("/products", auth, async (req, res) => {
     try {
-        let allProducts = await productsService.getAllProducts(req.query)
+        let allProducts = await productRepository.getAllProducts(req.query)
       allProducts.prevLink = allProducts.hasPrevPage
         ? `http://localhost:8080/products?page=${allProducts.prevPage}`
         : "";
@@ -44,7 +47,7 @@ viewsRouter.get("/products", auth, async (req, res) => {
   viewsRouter.get('/carts/:cid', auth, async (req, res) => {
     try {
         const { cid } = req.params
-        const result = await CartService.getCartById(cid)
+        const result = await cartRepository.getCartById(cid)
 
         if(result === null || typeof(result) === 'string') return res.render('cart', { result: false, message: 'ID not found' })
         return res.render('cart', { result })

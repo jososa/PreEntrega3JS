@@ -1,10 +1,10 @@
-import messageModel from "../../models/messagesModel.js"
+import messagesModel from "../models/messagesModel.js"
 
-export default class MessageManager{
+export default class MessageDao{
 
     getMessages = async () => {
         try {
-            return await messageModel.find()
+            return await messagesModel.find()
         } catch (error) {
             return error
         }
@@ -15,7 +15,7 @@ export default class MessageManager{
             return null
         }
         try {
-            return await messageModel.create(msg)
+            return await messagesModel.create(msg)
         } catch (error) {
             return error
         }

@@ -1,4 +1,4 @@
-import ticketRepository from "../repositories/ticketsRepositories.js"
+import { ticketRepository } from "../repositories/index.js"
 
 class TicketsService{
     createTicket = async (ticket) => {

@@ -1,30 +1,35 @@
 import { Router } from "express"
-import { cartManager } from "../dao/controllers/mongoDB/cartManagerMongo.js"
+import { cartController } from "../controllers/cartController.js"
+import { authorization } from "../middlewares/auth.js"
+import { ticketsController } from "../controllers/ticketController.js"
 
 const cartRouter = Router()
 
 //Alta de carrito
-cartRouter.post("/", cartManager.createCart)
+cartRouter.post("/", cartController.createCart)
 
 //Obtener carritos
-cartRouter.get("/", cartManager.getCarts)
+cartRouter.get("/", cartController.getCarts)
 
 //Obtener carrito por ID
-cartRouter.get("/:cid", cartManager.getCartById)
+cartRouter.get("/:cid", cartController.getCartById)
 
 //Agregar producto al carrito
-cartRouter.post("/:cid/product/:pid", cartManager.addProductsToCart)
+cartRouter.post("/:cid/product/:pid", authorization("usuario"), cartController.addProductsToCart)
 
 //Modificar carrito
-cartRouter.put('/:cid', cartManager.updateProductsInCart)
+cartRouter.put('/:cid', cartController.updateProductsInCart)
 
 //Actualiza la cantidad de un producto específico en el carrito
-cartRouter.put('/:cid/products/:pid', cartManager.updateProductQuantity)
+cartRouter.put('/:cid/products/:pid', cartController.updateProductQuantity)
 
 //Eliminar producto del carrito
-cartRouter.delete('/:cid/products/:pid', cartManager.removeProductFromCart)
+cartRouter.delete('/:cid/products/:pid', cartController.removeProductFromCart)
 
 //Eliminar carrito
-cartRouter.delete('/:cid', cartManager.clearCart)
+cartRouter.delete('/:cid', cartController.clearCart)
+
+//Crear ticket de compra
+cartRouter.post("/:cid/purchase", ticketsController.createTicket)
 
 export default cartRouter

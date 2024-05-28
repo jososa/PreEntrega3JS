@@ -1,19 +1,19 @@
-import usersService from "../../services/users.service.js"
-import CartService from "../../services/carts.service.js"
-import { createHash, isValidPassword } from "../../../utils.js"
+import { userService } from "../dao/services/users.service.js"
+import { cartService } from "../dao/services/carts.service.js"
+import { createHash, isValidPassword } from "../utils.js"
 
-class UserManager {
+class UserController {
 
     async registerUser(req, username, password, done){
         const { first_name, last_name, email, age } = req.body
         try {
-            const user = await usersService.findUserByEmail(username)
+            const user = await userService.findUserByEmail(username)
             if(user){
                 console.log("El usuario ya se encuentra registrado")
                 return done(null, false)
             }
 
-            const cart = await CartService.createCart()
+            const cart = await cartService.createCart()
 
             const newUser = {
                 first_name,
@@ -24,7 +24,7 @@ class UserManager {
                 cart: cart,
                 role: "usuario"
             }
-            const result = usersService.createUser(newUser)
+            const result = userService.createUser(newUser)
             return done(null, result)
         } catch (error) {
             return done(error)
@@ -48,7 +48,7 @@ class UserManager {
               return done(null, adminUser)
             }
   
-            const user = await usersService.findUserByEmail(username)
+            const user = await userService.findUserByEmail(username)
             if (!user) return done(null, false)
             const valid = isValidPassword(user, password)
             if (!valid) return done(null, false)
@@ -61,7 +61,7 @@ class UserManager {
 
     async loginGithub(accessToken, refreshToken, profile, done) {
         try {
-            const user = usersService.findUserByEmail(profile._json.email)
+            const user = userService.findUserByEmail(profile._json.email)
             if(!user){
                 const newUser = {
                     first_name: profile._json.name,
@@ -71,7 +71,7 @@ class UserManager {
                     password: "",
                     role: "usuario"
                 }
-                let createdUser = await usersService.createUser(newUser)
+                let createdUser = await userService.createUser(newUser)
                 done(null, createdUser)
             } else{
                 done(null, user)
@@ -83,4 +83,4 @@ class UserManager {
 
 }
 
-export const userManager = new UserManager()
+export const userController = new UserController()

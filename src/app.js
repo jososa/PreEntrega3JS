@@ -2,12 +2,14 @@ import express from 'express'
 import handlebars from 'express-handlebars'
 import { Server } from 'socket.io'
 import __dirname from './utils.js'
-import productsService from './dao/services/products.service.js'
+//import {productsService} from './dao/services/products.service.js'
+import { productRepository } from './dao/repositories/index.js'
 import productsRouter from './routes/productsRouter.js'
 import cartRouter from './routes/cartRouter.js'
 import viewsRouter from './routes/viewsRouter.js'
 import connectMongoDB from './config/connectionString.config.js'
-import messageManager from './dao/controllers/mongoDB/messageManagerMongo.js'
+//import messageManager from './dao/controllers/mongoDB/messageManagerMongo.js'
+import { messageRepository } from './dao/repositories/index.js'
 import sessionRouter from './routes/sessionRouter.js'
 import MongoStore from 'connect-mongo'
 import session from "express-session"
@@ -15,7 +17,7 @@ import passport from 'passport'
 import initializePassport from './config/passport.config.js'
 import { environment } from './config/config.js'
 
-const msg = new messageManager()
+//const msg = new messageManager()
 
 const app = express()
 
@@ -65,13 +67,13 @@ const socketServer = new Server(server)
 socketServer.on('connection', async(socket)=>{
     console.log("Conectado al socket del server con ID: ", socket.id)
 
-    const lstProd = await productsService.getProducts()
+    const lstProd = await productRepository.getProducts()
     socketServer.emit("listaProductos", lstProd)
 
     socket.on("altaProducto", async(obj)=>{
         try {
-            await productsService.addProduct(obj)
-            const lstProd = await productsService.getProducts()
+            await productRepository.addProduct(obj)
+            const lstProd = await productRepository.getProducts()
             socketServer.emit("listaProductos",lstProd)
         } catch (error) {
             console.log("Error al crear producto: ", error.message)
@@ -80,8 +82,8 @@ socketServer.on('connection', async(socket)=>{
 
     socket.on("deleteProduct", async(prodId)=>{
         try {
-            await productsService.deleteProduct(prodId)
-            const lstProd = await productsService.getProducts()
+            await productRepository.deleteProduct(prodId)
+            const lstProd = await productRepository.getProducts()
             socketServer.emit("listaProductos",lstProd)
         } catch (error) {
             console.log("Error al eliminar producto: ", error.message)
@@ -90,8 +92,8 @@ socketServer.on('connection', async(socket)=>{
 
     socket.on("mensaje", async (info) => {
         try {
-            await msg.createMessage(info)
-            socketServer.emit("chat", await msg.getMessages())
+            await messageRepository.createMessage(info)
+            socketServer.emit("chat", await messageRepository.getMessages())
         } catch (error) {
             console.log("Error al cargar chat: ", error.message)
         }

@@ -1,21 +1,22 @@
 import { Router } from "express"
-import { productManager } from '../dao/controllers/mongoDB/productManagerMongo.js'
+import { productController } from '../controllers/productController.js'
+import { authorization } from "../middlewares/auth.js"
 
 const productsRouter = Router()
 
 //Obtener productos
-productsRouter.get("/", productManager.getAllProducts)
+productsRouter.get("/", productController.getAllProducts)
 
 //Obtener producto por ID
-productsRouter.get("/:pid", productManager.getProductById)
+productsRouter.get("/:pid", productController.getProductById)
 
 //Crear producto
-productsRouter.post("/", productManager.addProduct)
+productsRouter.post("/", authorization("admin"), productController.addProduct)
 
 //Modificar producto
-productsRouter.put("/:prodId", productManager.updateProduct)
+productsRouter.put("/:prodId", authorization("admin"), productController.updateProduct)
 
 //Eliminar producto
-productsRouter.delete("/:prodId", productManager.deleteProduct)
+productsRouter.delete("/:prodId",authorization("admin"), productController.deleteProduct)
 
 export default productsRouter

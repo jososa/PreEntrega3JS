@@ -1,10 +1,10 @@
-import productsService from "../../services/products.service.js"
+import { productService } from "../dao/services/products.service.js"
 
-class ProductManager {
+export  default class ProductController {
 
     async getAllProducts(req, res) {
         try {
-            const products = await productsService.getAllProducts(req.query);
+            const products = await productService.getAllProducts(req.query);
             res.status(200).send({ status: "success", payload: products });
           } catch (error) {
             console.log(error);
@@ -15,7 +15,7 @@ class ProductManager {
     addProduct = async (req, res) => {
         const newProduct = req.body;
         try {
-          let result = await productsService.addProduct(newProduct)
+          let result = await productService.addProduct(newProduct)
           res.json({result})
         } catch (error) {
           res.status(500).json({ error: error.message })
@@ -34,7 +34,7 @@ class ProductManager {
     getProductById = async (req, res) => {
         const { pid } = req.params
         try {
-          const product = await productsService.getProductById(pid)
+          const product = await productService.getProductById(pid)
           if (!product) {
             return res
               .status(404)
@@ -50,7 +50,7 @@ class ProductManager {
     deleteProduct = async (req, res) => {
         const productId = req.params.prodId
         try {
-          await productsService.deleteProduct(productId)
+          await productService.deleteProduct(productId)
           res.json({ status: "Producto eliminado" })
         } catch (error) {
           res.status(400).json({ error: error.message })
@@ -61,7 +61,7 @@ class ProductManager {
         const productId = req.params.prodId
         const updatedFields = req.body
         try {
-          const updatedProduct = await productsService.updateProduct(
+          const updatedProduct = await productService.updateProduct(
             productId,
             updatedFields
           );
@@ -73,4 +73,4 @@ class ProductManager {
 
 }
 
-export const productManager = new ProductManager() 
+export const productController = new ProductController() 
